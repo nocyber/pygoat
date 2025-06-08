@@ -26,7 +26,7 @@ jobs:
       run: bandit -ll -ii -r . -f json -o bandit-report.json
       
     - name: Upload Artifact  # upload results
-      uses: actions/upload-artifact@v3.0.0
+      uses: actions/upload-artifact@v4
       if: always()  # exeute even if previous job fails (it will)
       with:
         name: bandit-findings
