@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4.2.2
 
     - name: Set up Python
       uses: actions/setup-python@v5.6.0
@@ -23,5 +23,38 @@ jobs:
       run: pip install bandit
 
     - name: Run Bandit Scan
-      run: bandit -ll -ii -r .
+      run: bandit -ll -ii -r . -f json -o bandit-report.json
+      
+    - name: Upload Artifact  # upload results
+      uses: actions/upload-artifact@v3.0.0
+      if: always()  # exeute even if previous job fails (it will)
+      with:
+        name: bandit-findings
+        path: bandit-report.json
+
+  image_scan:
+    name: Build Image and Run Image Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4.2.2
+
+    - name: Set Up Docker
+      uses: docker/setup-docker-action@v4.3.0
+      with:
+        docker_version: latest
+
+    - name: Build Docker Image
+      run: docker build -f Dockerfile -t myapp:latest .
+
+    - name: Docker Scout Scan
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
+        sh install-scout.sh
+        docker scout quickview
+        docker scout cves
+
+
+      
       
