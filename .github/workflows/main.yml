@@ -70,4 +70,4 @@ jobs:
       if: always()  # exeute even if previous job fails (it will)
       with:
         name: docker-scout-findings
-        path: scout-report.json
+        path: scout-report.sarif
