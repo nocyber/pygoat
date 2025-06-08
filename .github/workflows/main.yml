@@ -56,9 +56,18 @@ jobs:
    #     docker scout quickview
    #     docker scout cves
 
-    - name: Docker scout scan
+    - name: Docker scout scan  # https://github.com/docker/scout-action
       uses: docker/scout-action@v1.18.1
       with:
         dockerhub-user: ${{ secrets.DOCKER_USER }}
         dockerhub-password: ${{ secrets.DOCKER_PWD }}
         command: quickview, cves
+        only-severities: critical, high
+        sarif-file: scout-report.sarif
+        
+    - name: Upload Artifact  # upload results
+      uses: actions/upload-artifact@v4
+      if: always()  # exeute even if previous job fails (it will)
+      with:
+        name: docker-scout-findings
+        path: scout-report.json
